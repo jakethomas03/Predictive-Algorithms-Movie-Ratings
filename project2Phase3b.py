@@ -9,49 +9,40 @@
 
 
 # Function that reads from user list and inserts the information into a dictionary
-
 def createUserList():
-    
+  
     with open('ml-100k/u.user', 'r') as f:
-        
         userList = []
-        
+      
         for line in f:
-            
             pieces = line.split("|") 
             age = int(pieces[1])
             gender = pieces[2] 
             occupation = pieces[3] 
             zipCode = pieces[4].strip()
-            
             D = {}
             D["age"] = age 
             D["gender"] = gender 
             D["occupation"] = occupation 
             D["zip"] = zipCode 
             userList.append(D)
-            
+          
         return userList
 
 
 # Function that reads from movie list and inserts the information into a dictionary 
-
 def createMovieList():
 
     with open('ml-100k/u.item', 'r', encoding='windows-1252') as f:
-        
         movieList = []
         
         for line in f:
-
             pieces = line.split("|") 
             title = pieces[1]
             releaseDate = pieces[2] 
             videoReleaseDate = pieces[3] 
             imdbUrl = pieces[4]
-            genre = [int(g) for g in pieces[5:24]]
-            
-            
+            genre = [int(g) for g in pieces[5:24]]  
             D = {}
             D["title"] = title
             D["release date"] = releaseDate 
@@ -64,19 +55,16 @@ def createMovieList():
 
 
 # Function that reads from rating file and inserts the information into a list
-
 def readRatings():
 
     with open('ml-100k/u.data', 'r') as f:
-
         ratingsList = []
+      
         for line in f:
-
             pieces = line.split()
             user = int(pieces[0])
             movie = int(pieces[1])
             rating = int(pieces[2])
-
             ratingsTuple = (user, movie, rating)
             ratingsList.append(ratingsTuple)
 
@@ -88,29 +76,24 @@ def readRatings():
 def createGenreList():
 
     with open('ml-100k/u.genre', 'r') as f:
-
         genreList = []
 
         for line in f:
             pieces = line.split("|")
             genre = pieces[0]
             genreList.append(genre.strip())
+          
         genreList.remove('')
-
         return genreList
 
 
-# Function that takes the rating tuple list constructed by readRatings and 
-# organizes the tuples in this list into two data structures
-
+# Function that takes the rating tuple list constructed by readRatings and organizes the tuples in this list into two data structures
 def createRatingsDataStructure(numUsers, numItems, ratingTuples):
-
     
     rLu = [{} for i in range(numUsers)]
     rLm = [{} for i in range(numItems)]
     
     for user, item, rating in ratingTuples:
-        
         rLu[user-1][item] = rating
         rLm[item-1][user] = rating
     
@@ -118,78 +101,51 @@ def createRatingsDataStructure(numUsers, numItems, ratingTuples):
 
 
 # Function that returns a list of length 19, containing one number for each movie genre
-# The number in position i of this list is the fraction of ratings by the specified
-# subpopulation for movies in genre i that fall in the range [r1, r2]
-    
-
+# The number in position i of this list is the fraction of ratings by the specified subpopulation for movies in genre i that fall in the range [r1, r2] 
 def demGenreRatingFractions(userList, movieList, rLu, gender, ageRange, ratingRange):
 
     count = [0] * 19
     denominator = 0
     
     for userIndex in range(len(userList)):
-        
         user = userList[userIndex]
-        
         if gender == 'A' or gender == user['gender']:
-            
-            if ageRange[0] <= user['age'] < ageRange[1]:
-                
+            if ageRange[0] <= user['age'] < ageRange[1]: 
                 ratings = rLu[userIndex]
-                
                 for movieIndex in ratings:
-                    
                     if movieIndex in range(len(movieList)) and ratings.get(movieIndex) is not None:
-                        
                         movieGenre = movieList[movieIndex-1]['genre']
-                        
                         if ratingRange[0] <= ratings[movieIndex] <= ratingRange[1]:
-                            
                             for i in range(len(movieGenre)):
-                                
                                 if movieGenre[i] == 1:
-                                    
                                     index = i
                                     count[index] += 1
                                     
                         
     for userIndex in range(len(userList)):
-        
         user = userList[userIndex]
-        
         if gender == 'A' or gender == user['gender']:
-            
             if ageRange[0] <= user['age'] < ageRange[1]:
-                
                 ratings = rLu[userIndex]
-                
                 for movieIndex in ratings:
-                    
                     denominator += 1
-                    
-
+                  
     ratingFractions = [0] * 19
     i = 0
     
     for rating in count:
-        
         if denominator == 0:
-            
             return [None] * 19
         
         else:
-            
             ratingFractions[i] = rating / denominator
             ratingFractions[i] = round(ratingFractions[i], 4)
-            
             if ratingFractions[i] == 0.3989:
-                
                 ratingFractions[i] = round(ratingFractions[i], 3)
         i += 1
-
+      
     return ratingFractions
    
-
 
                 ###################
                 #PROJECT 2 PHASE 2A
@@ -197,15 +153,14 @@ def demGenreRatingFractions(userList, movieList, rLu, gender, ageRange, ratingRa
 
 # Prediction Algorithms 
 
-# Algorithm that returns a random integer rating 
 
+# Algorithm that returns a random integer rating 
 import random
 import matplotlib as plt
 
 def randomPrediction(u, m):
 
     randomPred = random.randint(1, 5)
-    
     return randomPred
 
 
@@ -216,39 +171,29 @@ def meanUserRatingPrediction(u, m, rLu):
     count = 0
     i = 0
     
-    for key in rLu[u-1]:
-        
+    for key in rLu[u-1]: 
         count = count + rLu[u-1][key]
         i += 1
-        
         if count == 0:
-            
             return None
         
     return count / i 
 
-    
 # Algorithm that returns the mean rating the given movie has received
-
 def meanMovieRatingPrediction(u, m, rLm):
 
     count = 0
     i = 0
     
     for key in rLm[m-1]:
-        
         count = count + rLm[m-1][key]
         i += 1
-
-    if count == 0 or i == 0:
-        
+        if count == 0 or i == 0:
             return None
         
     return count / i 
 
-
 # Algorithm that returns the mean rating of the users with the same gender and age within 5 years of the given user
-
 def demRatingPrediction(u, m, userList, rLu):
     
     count = 0
@@ -256,54 +201,39 @@ def demRatingPrediction(u, m, userList, rLu):
     U = []
     
     for userIndex in range(len(userList)):
-        
         user = userList[userIndex]
         givenUser = userList[u-1]
-        
         if userIndex+1 != u:
-            
             if givenUser['gender'] == user['gender']:
-                
                 if (givenUser['age'] - 5 <= user['age'] <= givenUser['age'] + 5):
-                    
                     if m in rLu[userIndex]:
-                        
                         U.append(userIndex)
                         count += rLu[userIndex][m]
                         denominator += 1
 
     if denominator == 0:
-        
         return None
-    
     else:
         
         return count / denominator
 
-    
 # Algorithm that returns the mean of all the ratings that user u has provided for movies with the same genre as given movie
-
 def genreRatingPrediction(u, m, movieList, rLu):
 
     denominator = 0
     count = 0
     
     for movieIndex in range(len(movieList)):
-        
         for x, y in zip(movieList[movieIndex]['genre'], movieList[m-1]['genre']):
-            
             if x == 1 and y == 1 and movieIndex != m-1 and movieIndex+1 in rLu[u-1]:
-
                 count += rLu[u-1][movieIndex+1]
                 denominator += 1
                 break
 
     if denominator == 0:
-        
         return None
     
     else:
-        
         return count / denominator
     
     
@@ -332,34 +262,27 @@ def partitionRatings(rawRatings, testPercent):
 
 
 # Function that computes the RMSE of the actual ratings and the predicted ratings
-
 def rmse(actualRatings, predictedRatings):
     
     squaredError = 0
     numRatings = 0
     
     for i in range(len(actualRatings)):
-        
         if predictedRatings[i] is not None:
-            
             squaredError += (actualRatings[i] - predictedRatings[i])**2
             numRatings += 1
             
     if numRatings == 0:
-        
         return None
     
     return math.sqrt(squaredError / numRatings)
-
 
 
                 ###################
                 #PROJECT 2 PHASE 3A
                 ###################
 
-# Function that returns the similarity in ratings between the two given users
-# Based on movies that they have both rated
-
+# Function that returns the similarity in ratings between the two given users based on movies that they have both rated 
 def similarity(u, v, rLu):
 
     C = [m for m in rLu[u-1] if m in rLu[v-1]]
@@ -371,14 +294,11 @@ def similarity(u, v, rLu):
     vMeanRating = meanUserRatingPrediction(v, m, rLu)
 
     if len(C) == 0:
-        
         return 0
     
     for movie in C:
-        
         uRating = rLu[u-1][movie]
         vRating = rLu[v-1][movie]
-
         numerator += (uRating - uMeanRating) * (vRating - vMeanRating)
         uDenom += (uRating - uMeanRating) ** 2
         vDenom += (vRating - vMeanRating) ** 2
@@ -388,17 +308,13 @@ def similarity(u, v, rLu):
     denominator = uDenom * vDenom
 
     if denominator == 0 or numerator == 0:
-        
         return 0
     
     else:
         
         return numerator / denominator
 
-
-# Function that returns list of users and similarity tuples for the k amount
-# of users who are most similar to given user
-
+# Function that returns list of users and similarity tuples for the k amount of users who are most similar to given user
 def kNearestNeighbors(u, rLu, k):
 
     U = []
@@ -418,46 +334,36 @@ def kNearestNeighbors(u, rLu, k):
 
 
 # Predicts a rating by user u for movie m using list of nearest neighbors (friends)
-
 def CFRatingPrediction(u, m, rLu, friends):
    
     u_mean_rating = sum(rLu[u-1].values()) / len(rLu[u-1])
-
     numerator = 0
     denominator = 0
     
     for friend in friends:
-        
         if friend[0] == u or m not in rLu[(friend[0])-1]:
             continue
-        
-        
+          
         user_mean_rating = sum(rLu[(friend[0])-1].values()) / len(rLu[(friend[0])-1])
-        
-        
         deviation = rLu[(friend[0])-1][m] - user_mean_rating
-        
-        
         numerator += friend[1] * deviation
         denominator += abs(friend[1])
-    
-
+  
     if denominator == 0:
         return u_mean_rating
     
-
     return u_mean_rating + numerator / denominator
 
 
 
                 ###################
                 #PROJECT 2 PHASE 3B
-                ###################
-                
-                
-# Main functions that utilize all subfunctions in order to test prediction algorithms
+                ################### 
+
+
+# Main functions that utilize all subfunctions in order to test prediction algorithms 
 # Runs each algorithm on 10 different test and training sets 
-# Then creates visualizations based on each algorithms RMSE 
+# Then creates visualizations based on each algorithms RMSE
 
 def main1():
     
@@ -467,7 +373,7 @@ def main1():
     numUsers = len(userList)
     numItems = len(movieList)
     
-    # initialize empty lists to capture the predicted ratings
+    # Initialize empty lists to capture the predicted ratings
     random = []
     meanUser = []
     meanMovie = []
@@ -492,16 +398,13 @@ def main1():
         
     
     for i in range (0,10):
-        
         [trainingSet, testSet] = partitionRatings(ratingTuples, 20)
         [trainingRLu, trainingRLm] = createRatingsDataStructure(numUsers, numItems, trainingSet)
-
+      
         for j in range(len(userList)):
-
             mainFriends.append(kNearestNeighbors(j, trainingRLu, len(userList)))
         
         for tuple in testSet:
-            
             actual.append(tuple[2])
             random.append(randomPrediction(tuple[0], tuple[1]))
             meanUser.append(meanUserRatingPrediction(tuple[0], tuple[1], trainingRLu))
@@ -538,7 +441,7 @@ def main():
     numUsers = len(userList)
     numItems = len(movieList)
     
-    # initialize empty lists to capture the predicted ratings
+    # Initialize empty lists to capture the predicted ratings
     random = []
     meanUser = []
     meanMovie = []
@@ -561,18 +464,14 @@ def main():
     algo6var4 = []
     
     for i in range (0,10):
-        
         [trainingSet, testSet] = partitionRatings(ratingTuples, 20)
         [trainingRLu, trainingRLm] = createRatingsDataStructure(numUsers, numItems, trainingSet)
         
-        
         for tuple in testSet:
-            
             friendsALL = kNearestNeighbors(tuple[0], trainingRLu, len(testSet))
             friends500 = friendsALL[:10]
             friends100 = friendsALL[:100]
-            friends10 = friendsALL[:500]
-            
+            friends10 = friendsALL[:500]   
             actual.append(tuple[2])
             random.append(randomPrediction(tuple[0], tuple[1]))
             meanUser.append(meanUserRatingPrediction(tuple[0], tuple[1], trainingRLu))
@@ -598,5 +497,3 @@ def main():
     labels = ["Algo1", "Algo2", "Algo3", "Algo4", "Algo5", "A6var1", "A6var2", "A6var3", "A6var4"]
     plt.draw_boxplot(data, labels)
     return
-
-
