@@ -7,7 +7,7 @@
 
 ## Description 
 
-Personalized recommendations have become a normal part of everyday life and it is easy to forget how complex these predictive algorithms truly are. In this project, I was able to dip my feet into the ocean of algorithmic machine learning and gain an understanding about what goes into these increasingly common algorithms.
+Personalized recommendations have become a normal part of everyday life and it is easy to forget how complex these predictive algorithms truly are. In this project, I was able to begin learning the basics of algorithmic machine learning and gain an understanding about what goes into these increasingly common algorithms.
 
 To begin this project, I used Python to read in a file of 100,000 user movie ratings, which we later used to algorithmically predict, test, filter, and experiment on this data. The ultimate goal of the project was to take a certain user within the data files provided, and present them with a movie recommendation based on their rating history as well as other users in the data set. The 6 data sets and their descriptions can be found in [Description of Data Set and Link](#Description-of-Data-Set). The project was split up into 3 phases, each with its own distinct purpose. 
 
