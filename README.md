@@ -1,5 +1,7 @@
 # Predictive Algorithms for Movie Ratings
 
+![Python badge](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
 1. [Description](#Description)
 2. [Description of Data Set](#Description-of-Data-Set)
 3. [Additional Documentation](#Additional-Documentation)
